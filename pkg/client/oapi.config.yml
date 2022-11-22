@@ -1,0 +1,7 @@
+package: client
+output: pkg/client/client.go
+generate:
+  models: true
+  client: true
+output-options:
+  client-type-name: Client

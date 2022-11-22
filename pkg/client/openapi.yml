@@ -1,0 +1,212 @@
+openapi: 3.0.2
+info:
+  title: Recontent.app - Public API
+  version: '0.1'
+  contact:
+    name: Recontent.app
+    url: 'https://recontent.app/'
+    email: hello@recontent.app
+servers:
+  - url: 'https://api.recontent.app/public'
+security:
+  - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+paths:
+  /projects:
+    get:
+      summary: List all projects
+      description: 'Returns a list of projects within a workspace. The projects are returned sorted by creation date, with the most recent projects appearing first.'
+      tags:
+        - Projects
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: 'A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 100.'
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+        - name: after
+          in: query
+          required: false
+          description: 'A cursor for use in pagination. For instance, if you make a list request and receive 100 objects, ending with 123456, your subsequent call can include after=123456 in order to fetch the next page of the list.'
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  has_more:
+                    type: boolean
+                    example: false
+                  total_count:
+                    type: integer
+                    example: 1
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        id:
+                          type: string
+                          example: 2GMnQk9TlT29TT6jPQkYD7jBxtH
+                        name:
+                          type: string
+                          example: My project
+                        description:
+                          type: string
+                          example: A project description
+                          nullable: true
+                        workspace_id:
+                          type: string
+                          example: 2HsHXwJhNllxFTgyKePN8jFByJG
+                        created_at:
+                          type: string
+                          example: '2022-01-01T20:00:00.89Z'
+                          format: date
+                        updated_at:
+                          type: string
+                          example: '2022-01-01T20:00:00.89Z'
+                          format: date
+                      required:
+                        - id
+                        - name
+                        - description
+                        - workspace_id
+                        - created_at
+                        - updated_at
+                required:
+                  - has_more
+                  - total_count
+                  - data
+  /languages:
+    get:
+      summary: List all languages
+      description: Returns a list of languages within a workspace or project.
+      tags:
+        - Languages
+      parameters:
+        - name: project_id
+          in: query
+          required: false
+          description: Only return projects associated to the project specified by this project ID.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        id:
+                          type: string
+                          example: 2GMnQk9TlT29TT6jPQkYD7jBxtH
+                        name:
+                          type: string
+                          example: English
+                        locale:
+                          type: string
+                          example: en_US
+                        workspace_id:
+                          type: string
+                          example: 2HsHXwJhNllxFTgyKePN8jFByJG
+                        created_at:
+                          type: string
+                          example: '2022-01-01T20:00:00.89Z'
+                          format: date
+                        updated_at:
+                          type: string
+                          example: '2022-01-01T20:00:00.89Z'
+                          format: date
+                      required:
+                        - id
+                        - name
+                        - locale
+                        - workspace_id
+                        - created_at
+                        - updated_at
+                required:
+                  - data
+  /phrases/export:
+    get:
+      summary: Export all phrases
+      description: 'Returns a dictionary (also known as a map, hashmap or associative array) of phrases & their respective translations in a language within a project.'
+      tags:
+        - Phrases
+      parameters:
+        - name: project_id
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: language_id
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          description: 'A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 100.'
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+        - name: after
+          in: query
+          required: false
+          description: 'A cursor for use in pagination. For instance, if you make a list request and receive 100 objects, ending with 123456, your subsequent call can include after=123456 in order to fetch the next page of the list.'
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  has_more:
+                    type: boolean
+                    example: false
+                  total_count:
+                    type: integer
+                    example: 1
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        key:
+                          type: string
+                          example: dashboard.title
+                        value:
+                          type: string
+                          example: Welcome to your dashboard
+                required:
+                  - has_more
+                  - total_count
+                  - data
