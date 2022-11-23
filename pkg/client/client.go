@@ -11,9 +11,9 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/deepmap/oapi-codegen/pkg/runtime"
-	openapi_types "github.com/deepmap/oapi-codegen/pkg/types"
 )
 
 const (
@@ -31,11 +31,8 @@ type GetPhrasesExportParams struct {
 	ProjectId  string `form:"project_id" json:"project_id"`
 	LanguageId string `form:"language_id" json:"language_id"`
 
-	// Limit A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 100.
-	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
-
-	// After A cursor for use in pagination. For instance, if you make a list request and receive 100 objects, ending with 123456, your subsequent call can include after=123456 in order to fetch the next page of the list.
-	After *string `form:"after,omitempty" json:"after,omitempty"`
+	// RevisionId Returns phrases & translations for a specific revision. If not provided, it defaults to "master".
+	RevisionId *string `form:"revision_id,omitempty" json:"revision_id,omitempty"`
 }
 
 // GetProjectsParams defines parameters for GetProjects.
@@ -258,25 +255,9 @@ func NewGetPhrasesExportRequest(server string, params *GetPhrasesExportParams) (
 		}
 	}
 
-	if params.Limit != nil {
+	if params.RevisionId != nil {
 
-		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {
-			return nil, err
-		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-			return nil, err
-		} else {
-			for k, v := range parsed {
-				for _, v2 := range v {
-					queryValues.Add(k, v2)
-				}
-			}
-		}
-
-	}
-
-	if params.After != nil {
-
-		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "after", runtime.ParamLocationQuery, *params.After); err != nil {
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "revision_id", runtime.ParamLocationQuery, *params.RevisionId); err != nil {
 			return nil, err
 		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
 			return nil, err
@@ -421,12 +402,12 @@ type GetLanguagesResponse struct {
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data []struct {
-			CreatedAt   openapi_types.Date `json:"created_at"`
-			Id          string             `json:"id"`
-			Locale      string             `json:"locale"`
-			Name        string             `json:"name"`
-			UpdatedAt   openapi_types.Date `json:"updated_at"`
-			WorkspaceId string             `json:"workspace_id"`
+			CreatedAt   time.Time `json:"created_at"`
+			Id          string    `json:"id"`
+			Locale      string    `json:"locale"`
+			Name        string    `json:"name"`
+			UpdatedAt   time.Time `json:"updated_at"`
+			WorkspaceId string    `json:"workspace_id"`
 		} `json:"data"`
 	}
 }
@@ -451,12 +432,7 @@ type GetPhrasesExportResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data []struct {
-			Key   *string `json:"key,omitempty"`
-			Value *string `json:"value,omitempty"`
-		} `json:"data"`
-		HasMore    bool `json:"has_more"`
-		TotalCount int  `json:"total_count"`
+		Data map[string]string `json:"data"`
 	}
 }
 
@@ -481,12 +457,12 @@ type GetProjectsResponse struct {
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Data []struct {
-			CreatedAt   openapi_types.Date `json:"created_at"`
-			Description *string            `json:"description"`
-			Id          string             `json:"id"`
-			Name        string             `json:"name"`
-			UpdatedAt   openapi_types.Date `json:"updated_at"`
-			WorkspaceId string             `json:"workspace_id"`
+			CreatedAt   time.Time `json:"created_at"`
+			Description *string   `json:"description"`
+			Id          string    `json:"id"`
+			Name        string    `json:"name"`
+			UpdatedAt   time.Time `json:"updated_at"`
+			WorkspaceId string    `json:"workspace_id"`
 		} `json:"data"`
 		HasMore    bool `json:"has_more"`
 		TotalCount int  `json:"total_count"`
@@ -553,12 +529,12 @@ func ParseGetLanguagesResponse(rsp *http.Response) (*GetLanguagesResponse, error
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
 			Data []struct {
-				CreatedAt   openapi_types.Date `json:"created_at"`
-				Id          string             `json:"id"`
-				Locale      string             `json:"locale"`
-				Name        string             `json:"name"`
-				UpdatedAt   openapi_types.Date `json:"updated_at"`
-				WorkspaceId string             `json:"workspace_id"`
+				CreatedAt   time.Time `json:"created_at"`
+				Id          string    `json:"id"`
+				Locale      string    `json:"locale"`
+				Name        string    `json:"name"`
+				UpdatedAt   time.Time `json:"updated_at"`
+				WorkspaceId string    `json:"workspace_id"`
 			} `json:"data"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -587,12 +563,7 @@ func ParseGetPhrasesExportResponse(rsp *http.Response) (*GetPhrasesExportRespons
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data []struct {
-				Key   *string `json:"key,omitempty"`
-				Value *string `json:"value,omitempty"`
-			} `json:"data"`
-			HasMore    bool `json:"has_more"`
-			TotalCount int  `json:"total_count"`
+			Data map[string]string `json:"data"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -621,12 +592,12 @@ func ParseGetProjectsResponse(rsp *http.Response) (*GetProjectsResponse, error) 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
 			Data []struct {
-				CreatedAt   openapi_types.Date `json:"created_at"`
-				Description *string            `json:"description"`
-				Id          string             `json:"id"`
-				Name        string             `json:"name"`
-				UpdatedAt   openapi_types.Date `json:"updated_at"`
-				WorkspaceId string             `json:"workspace_id"`
+				CreatedAt   time.Time `json:"created_at"`
+				Description *string   `json:"description"`
+				Id          string    `json:"id"`
+				Name        string    `json:"name"`
+				UpdatedAt   time.Time `json:"updated_at"`
+				WorkspaceId string    `json:"workspace_id"`
 			} `json:"data"`
 			HasMore    bool `json:"has_more"`
 			TotalCount int  `json:"total_count"`
