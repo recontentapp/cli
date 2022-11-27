@@ -191,3 +191,4 @@ dist
 .ionide
 
 pkg/client/openapi.yml
+dist/
