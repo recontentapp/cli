@@ -20,11 +20,6 @@ archives:
       amd64: x86_64
 release:
   prerelease: auto
-universal_binaries:
-  -
-    replace: true
-    id: recontent
-    name_template: 'recontent_{{.Version}}'
 checksum:
   name_template: 'checksums.txt'
 snapshot:
