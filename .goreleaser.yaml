@@ -21,7 +21,10 @@ archives:
 release:
   prerelease: auto
 universal_binaries:
-  - replace: true
+  -
+    replace: true
+    id: recontent
+    name_template: 'recontent_{{.Version}}'
 checksum:
   name_template: 'checksums.txt'
 snapshot:
@@ -44,5 +47,3 @@ brews:
       name: greeeg
       email: gregoiremielle@gmail.com
     folder: Formula
-    install: |
-      bin.install "recontent"
