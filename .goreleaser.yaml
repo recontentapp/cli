@@ -35,10 +35,14 @@ changelog:
 brews:
   -
     name: recontent
-    homepage: https://github.com/recontentapp/cli
+    description: How product teams manage localized content
+    homepage: https://recontent.app
     tap:
       owner: recontentapp
       name: homebrew-recontent
     commit_author:
       name: greeeg
       email: gregoiremielle@gmail.com
+    folder: Formula
+    install: |
+      bin.install "recontent"
