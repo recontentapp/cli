@@ -6,9 +6,14 @@
 
 Recontent CLI, or `recontent`, is a command-line interface to Recontent for use in your terminal or your scripts.
 
-It can be installed through the following links:
+It can be installed through [`Homebrew`](https://brew.sh/):
 
-TO DO
+```sh
+brew tap recontentapp/recontent
+brew install recontent
+```
+
+Or using one of the binaries published on the [Releases page](https://github.com/recontentapp/cli/releases).
 
 ## Configuration
 
